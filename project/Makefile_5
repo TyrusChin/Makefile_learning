@@ -1,0 +1,19 @@
+export CC = gcc
+CFLAGS = -Iadd -Isub -O2
+TARGET = cacu6
+
+export OBJSDIR = ${shell pwd}/objs
+
+$(TARGET):$(OBJSDIR) main.o
+	$(MAKE) -C add
+	$(MAKE) -C sub
+	$(CC) -o $(TARGET) $(OBJSDIR)/*.o
+
+main.o:main.c
+	$(CC) -o $(OBJSDIR)/$@ -c $^ $(CFLAGS)
+
+$(OBJSDIR):
+	mkdir -p $(OBJSDIR)
+
+clean:
+	-$(RM) $(TARGET) $(OBJSDIR)/*.o

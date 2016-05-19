@@ -1,0 +1,42 @@
+# 第一行item的":"左边为make命令在正确操作之后默认生成的文件，故生成cacu2，依赖于":"右边的文件。
+# 每一个item都是一个规则
+# 在从左往右扫描的过程中，如果不存在某个文件，则跳到生成它的规则
+# 注意底下的一行，它是以tab键开头的，不能是空格，表示满足所有依赖的情况下，执行那几行指令
+
+# cacu2:add_int.o add_float.o sub_int.o sub_float.o main.o
+# 	gcc -o cacu2 add/add_int.o add/add_float.o sub/sub_int.o sub/sub_float.o main.o
+# 
+# add_int.o:add/add_int.c add/add.h
+# 	gcc -o add/add_int.o -c add/add_int.c
+# 
+# add_float.o:add/add_float.c add/add.h
+# 	gcc -o add/add_float.o -c add/add_float.c
+# 
+# sub_int.o:sub/sub_int.c sub/sub.h
+# 	gcc -o sub/sub_int.o -c sub/sub_int.c
+# 
+# sub_float.o:sub/sub_float.c sub/sub.h
+# 	gcc -o sub/sub_float.o -c sub/sub_float.c
+# 
+# # main.o:main.c add/add.h sub/sub.h
+# #	gcc -o main.o -c main.c -Iadd -Isub
+# main.o:%o:%c
+# 	gcc -o $@ -c $< -Iadd -Isub
+# 
+# # 清理的规则，可以使用make clean来主动执行
+# clean:
+# 	rm -f cacu2 add/add_int.o add/add_float.o sub/sub_int.o sub/sub_float.o main.o
+# 
+
+# 使用命令make编译扩展名为c的C语言文件的时候，源文件的编译规则不用明确给出。(会使用一个默认的编译规则) -- make的隐含规则
+CC = gcc
+CFLAGS = -Iadd -Isub -O2
+VPATH = add:sub:.
+TARGET = cacu5
+OBJS = add_int.o add_float.o sub_int.o sub_float.o main.o
+
+$(TARGET):$(OBJS)
+	$(CC) -o $(TARGET) $(OBJS) $(CFLAGS)
+
+clean:
+	-$(RM) $(TARGET) $(OBJS)
